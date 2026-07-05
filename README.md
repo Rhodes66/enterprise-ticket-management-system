@@ -22,6 +22,7 @@ AI 辅助建议
 用户管理
 ![用户管理](docs/screenshots/user-management.png)
 
+
 2. 技术栈
 前端：HTML、CSS、JavaScript
 后端：Node.js、Express
@@ -30,6 +31,7 @@ AI 辅助建议
 数据可视化：ECharts
 AI 辅助：DeepSeek API，可选；未配置 Key 时使用本地模拟建议
 项目管理：npm、Git/GitHub
+
 
 3. 核心功能
 
@@ -67,6 +69,7 @@ AI 生成处理建议
 支持 DeepSeek API
 如果没有配置 API Key，系统会自动使用本地规则生成演示结果，方便项目展示和答辩
 
+
 4. 技术架构图
 ```mermaid
 graph TD
@@ -91,6 +94,7 @@ graph TD
     D --> D3[comments 处理记录表]
     D --> D4[logs 操作日志表]
 ```
+
 
 5. 项目目录结构
 ```text
@@ -123,12 +127,15 @@ enterprise-ticket-management-system/
 └── README.md
 ```
 
+
 6. 运行方式
+
 6.1 环境要求
 先安装：
 Node.js 18 或以上版本
 npm
 Chrome / Edge 浏览器
+
 
 6.2 安装依赖
 进入项目目录：
@@ -136,6 +143,7 @@ Chrome / Edge 浏览器
 cd enterprise-ticket-management-system
 npm install
 ```
+
 
 6.3 配置环境变量
 复制 `.env.example` 文件并改名为 `.env`：
@@ -171,12 +179,14 @@ npm start
 http://localhost:3000
 ```
 
+
 6.5 演示账号
 | 角色 | 邮箱 | 密码 |
 |---|---|---|
 | 管理员 | admin@example.com | admin123 |
 | 技术人员 | tech@example.com | tech123 |
 | 员工 | employee@example.com | emp123 |
+
 
 7. 使用流程
 员工 Employee
@@ -195,6 +205,7 @@ http://localhost:3000
 5. 更新工单状态
 6. 使用 AI 生成摘要、优先级建议和处理建议
 
+
 管理员 Admin
 1. 登录系统
 2. 查看全部工单
@@ -204,6 +215,7 @@ http://localhost:3000
 6. 查看用户列表
 7. 使用 AI 辅助工单处理
 
+
 8. 项目亮点
 1. 企业业务场景明确**：围绕企业 IT 服务台工单流转场景设计，比普通课程项目更接近真实企业开发。
 2. 具备角色权限控制**：员工、技术人员、管理员拥有不同权限，体现后台系统常见 RBAC 思路。
@@ -212,6 +224,7 @@ http://localhost:3000
 5. 包含数据统计看板**：通过 ECharts 展示状态分布、优先级分布和趋势数据。
 6. AI 与业务结合**：AI 不是单纯聊天，而是用于摘要、优先级推荐和处理建议，更贴近企业应用场景。
 7. 可本地运行展示**：即使没有真实 API Key，也可以完整演示核心功能。
+
 
 9. 后续可扩展方向
 文件上传与截图附件
@@ -224,6 +237,7 @@ MySQL / PostgreSQL 替换 SQLite
 增加单元测试与接口测试
 加入日志搜索与审计功能
 导出周报、月报 PDF
+
 
 10. 项目总结
 本项目完成了一个面向企业内部 IT 服务场景的工单管理系统，实现了用户认证、角色权限、工单流转、处理记录、数据统计和 AI 辅助建议等功能。通过该项目，我熟悉了企业后台系统的基本业务流程，理解了前后端接口、数据库表设计、权限控制和数据可视化之间的配合方式，也提升了将 AI 能力应用到实际业务场景中的能力。
