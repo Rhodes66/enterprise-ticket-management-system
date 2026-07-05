@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>企业内部工单管理系统</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+  <div id="toast" class="toast hidden"></div>
+
+  <section id="authPage" class="auth-layout">
+    <div class="auth-card intro-card">
+      <p class="eyebrow">Enterprise Scenario Project</p>
+      <h1>企业内部工单管理系统</h1>
+      <p class="intro-text">
+        模拟企业 IT 服务台场景，支持员工提交工单、技术人员处理工单、管理员分配工单和查看统计看板，并集成 AI 辅助摘要与处理建议。
+      </p>
+      <div class="feature-grid">
+        <div><strong>RBAC</strong><span>多角色权限</span></div>
+        <div><strong>REST API</strong><span>前后端接口</span></div>
+        <div><strong>SQLite</strong><span>数据持久化</span></div>
+        <div><strong>AI</strong><span>摘要与建议</span></div>
+      </div>
+      <div class="demo-accounts">
+        <h3>演示账号</h3>
+        <p>管理员：admin@example.com / admin123</p>
+        <p>技术人员：tech@example.com / tech123</p>
+        <p>员工：employee@example.com / emp123</p>
+      </div>
+    </div>
+
+    <div class="auth-card form-card">
+      <div class="tab-bar">
+        <button class="tab active" data-tab="login">登录</button>
+        <button class="tab" data-tab="register">注册</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>邮箱</label>
+        <input name="email" type="email" value="admin@example.com" required />
+        <label>密码</label>
+        <input name="password" type="password" value="admin123" required />
+        <button type="submit" class="primary-btn">登录系统</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <label>姓名</label>
+        <input name="name" placeholder="例如：Rodes Qian" required />
+        <label>邮箱</label>
+        <input name="email" type="email" placeholder="your@email.com" required />
+        <label>密码</label>
+        <input name="password" type="password" placeholder="至少 6 位" required />
+        <label>角色</label>
+        <select name="role">
+          <option value="employee">员工 Employee</option>
+          <option value="technician">技术人员 Technician</option>
+          <option value="admin">管理员 Admin</option>
+        </select>
+        <button type="submit" class="primary-btn">创建账号</button>
+      </form>
+    </div>
+  </section>
+
+  <section id="appPage" class="app-layout hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">ET</div>
+        <div>
+          <h2>TicketPro</h2>
+          <p>企业工单系统</p>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-view="overview">数据看板</button>
+        <button class="nav-item" data-view="tickets">工单列表</button>
+        <button class="nav-item" data-view="create">创建工单</button>
+        <button class="nav-item admin-only" data-view="users">用户管理</button>
+      </nav>
+      <div class="user-panel">
+        <p id="currentUserName">-</p>
+        <span id="currentUserRole">-</span>
+        <button id="logoutBtn" class="secondary-btn">退出登录</button>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">IT Service Desk</p>
+          <h1 id="pageTitle">数据看板</h1>
+        </div>
+        <button id="refreshBtn" class="secondary-btn">刷新数据</button>
+      </header>
+
+      <section id="overviewView" class="view active-view">
+        <div class="stats-grid">
+          <div class="stat-card"><span>总工单</span><strong id="statTotal">0</strong></div>
+          <div class="stat-card"><span>待处理</span><strong id="statPending">0</strong></div>
+          <div class="stat-card"><span>处理中</span><strong id="statProcessing">0</strong></div>
+          <div class="stat-card"><span>已解决</span><strong id="statResolved">0</strong></div>
+          <div class="stat-card urgent"><span>紧急</span><strong id="statUrgent">0</strong></div>
+        </div>
+        <div class="chart-grid">
+          <div class="panel"><h3>工单状态分布</h3><div id="statusChart" class="chart"></div></div>
+          <div class="panel"><h3>优先级分布</h3><div id="priorityChart" class="chart"></div></div>
+          <div class="panel wide"><h3>每日新增趋势</h3><div id="trendChart" class="chart"></div></div>
+          <div class="panel admin-only"><h3>技术人员处理量</h3><div id="techChart" class="chart"></div></div>
+        </div>
+      </section>
+
+      <section id="ticketsView" class="view">
+        <div class="panel">
+          <div class="filter-row">
+            <input id="searchInput" placeholder="搜索标题、描述或类别" />
+            <select id="statusFilter">
+              <option value="">全部状态</option>
+              <option value="pending">待处理</option>
+              <option value="processing">处理中</option>
+              <option value="resolved">已解决</option>
+              <option value="closed">已关闭</option>
+            </select>
+            <select id="priorityFilter">
+              <option value="">全部优先级</option>
+              <option value="low">低</option>
+              <option value="medium">中</option>
+              <option value="high">高</option>
+              <option value="urgent">紧急</option>
+            </select>
+            <button id="filterBtn" class="primary-btn">筛选</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>标题</th>
+                  <th>类别</th>
+                  <th>优先级</th>
+                  <th>状态</th>
+                  <th>提交人</th>
+                  <th>处理人</th>
+                  <th>更新时间</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="ticketTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="createView" class="view">
+        <div class="panel form-panel">
+          <h3>创建新工单</h3>
+          <form id="ticketForm">
+            <label>标题</label>
+            <input name="title" placeholder="例如：VPN 登录失败" required />
+            <label>类别</label>
+            <select name="category">
+              <option value="account">账号权限</option>
+              <option value="hardware">硬件设备</option>
+              <option value="network">网络问题</option>
+              <option value="system">业务系统</option>
+              <option value="general">其他问题</option>
+            </select>
+            <label>优先级</label>
+            <select name="priority">
+              <option value="low">低</option>
+              <option value="medium" selected>中</option>
+              <option value="high">高</option>
+              <option value="urgent">紧急</option>
+            </select>
+            <label>问题描述</label>
+            <textarea name="description" rows="6" placeholder="请描述发生时间、影响范围、错误提示、已尝试的方法等" required></textarea>
+            <button type="submit" class="primary-btn">提交工单</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="usersView" class="view">
+        <div class="panel">
+          <h3>用户列表</h3>
+          <div id="usersList" class="users-list"></div>
+        </div>
+      </section>
+    </main>
+  </section>
+
+  <div id="ticketModal" class="modal hidden">
+    <div class="modal-card">
+      <button id="closeModalBtn" class="close-btn">×</button>
+      <div id="ticketDetail"></div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
